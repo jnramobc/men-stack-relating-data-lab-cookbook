@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // Route to get a specific user's pantry items
-// This route retrieves a specific user by their userId and renders their pantry items
+// retrieves a specific user by their userId and renders their pantry items
 router.get('/:userId', async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);

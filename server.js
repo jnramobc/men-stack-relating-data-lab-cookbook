@@ -17,17 +17,18 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((error) => {
-  console.error('Could not connect to MongoDB:', error.message);
-});
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((error) => {
+    console.error('Could not connect to MongoDB:', error.message);
+  });
 
+  //set EJS as the view engine
 app.set('view engine', 'ejs');
 
+//middleware setup
 app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'));
 app.use(
@@ -38,6 +39,8 @@ app.use(
   })
 );
 
+
+// Custom middleware to pass user data to views
 app.use(passUserToView);
 
 app.use('/', indexRoutes);

@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 
-// Index Route: GET /users/:userId/foods
+// Display pantry 
 router.get('/', async (req, res) => {
   try {
     const currentUser = await User.findById(req.session.user._id);
@@ -15,12 +15,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// New Route: GET /users/:userId/foods/new
+/// form to add new pantry item
 router.get('/new', (req, res) => {
   res.render('foods/new', { user: req.session.user });
 });
 
-// Create Route: POST /users/:userId/foods
+// form submit for new pantry item
 router.post('/', async (req, res) => {
   try {
     const currentUser = await User.findById(req.session.user._id);
@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Delete Route: DELETE /users/:userId/foods/:itemId
+// Delete pantry item
 router.delete('/:itemId', async (req, res) => {
   try {
     const currentUser = await User.findById(req.session.user._id);
@@ -46,7 +46,7 @@ router.delete('/:itemId', async (req, res) => {
   }
 });
 
-// Edit Route: GET /users/:userId/foods/:itemId/edit
+// Edit pantry item
 router.get('/:itemId/edit', async (req, res) => {
   try {
     const currentUser = await User.findById(req.session.user._id);
@@ -58,7 +58,7 @@ router.get('/:itemId/edit', async (req, res) => {
   }
 });
 
-// Update Route: PUT /users/:userId/foods/:itemId
+// handle form submit for editing pantry item
 router.put('/:itemId', async (req, res) => {
   try {
     const currentUser = await User.findById(req.session.user._id);

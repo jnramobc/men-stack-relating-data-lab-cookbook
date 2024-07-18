@@ -3,10 +3,13 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
+//render sign-up page
 router.get('/sign-up', (req, res) => {
   res.render('auth/sign-up');
 });
 
+
+//render sign in page
 router.get('/sign-in', (req, res) => {
   res.render('auth/sign-in');
 });
@@ -16,6 +19,7 @@ router.get('/sign-out', (req, res) => {
   res.redirect('/');
 });
 
+//sign out route
 router.post('/sign-up', async (req, res) => {
   try {
     const userInDatabase = await User.findOne({ username: req.body.username });
@@ -34,6 +38,7 @@ router.post('/sign-up', async (req, res) => {
   }
 });
 
+// sign- up form submission
 router.post('/sign-in', async (req, res) => {
   try {
     const userInDatabase = await User.findOne({ username: req.body.username });
