@@ -1,25 +1,35 @@
-const dotenv = require('dotenv');
-dotenv.config();
+// server.js
+
 const express = require('express');
-const app = express();
-const mongoose = require('mongoose');
-const methodOverride = require('method-override');
-const morgan = require('morgan');
 const session = require('express-session');
+const methodOverride = require('method-override');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const indexRoutes = require('./routes/index');
+const authRoutes = require('./controllers/auth');
+const foodsRoutes = require('./controllers/foods');
+const usersRoutes = require('./controllers/users');
+const isSignedIn = require('./middleware/is-signed-in');
+const passUserToView = require('./middleware/pass-user-to-view');
 
-const authController = require('./controllers/auth.js');
+dotenv.config();
 
-const port = process.env.PORT ? process.env.PORT : '3000';
+const app = express();
+const port = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGODB_URI);
-
-mongoose.connection.on('connected', () => {
-  console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((error) => {
+  console.error('Could not connect to MongoDB:', error.message);
 });
+
+app.set('view engine', 'ejs');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'));
-// app.use(morgan('dev'));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -28,22 +38,14 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
-  res.render('index.ejs', {
-    user: req.session.user,
-  });
-});
+app.use(passUserToView);
 
-app.get('/vip-lounge', (req, res) => {
-  if (req.session.user) {
-    res.send(`Welcome to the party ${req.session.user.username}.`);
-  } else {
-    res.send('Sorry, no guests allowed.');
-  }
-});
-
-app.use('/auth', authController);
+app.use('/', indexRoutes);
+app.use('/auth', authRoutes);
+app.use(isSignedIn); // Middleware to check if user is signed in
+app.use('/users/:userId/foods', foodsRoutes); // Foods routes need a signed-in user
+app.use('/users', usersRoutes); // Users routes
 
 app.listen(port, () => {
-  console.log(`The express app is ready on port ${port}!`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
